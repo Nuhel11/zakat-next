@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Zakat Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="logo">Zakat Calculator</a>
+      <nav class="nav">
+        <a href="#calculator">Calculator</a>
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero">
+      <p class="eyebrow">ZAKAT · 2.5% OF WEALTH HELD FOR A YEAR</p>
+      <h1>Family Zakat Calculator</h1>
+      <p class="intro">Work out zakat for yourself or for each person in your household.</p>
+    </section>
+
+    <!-- ===== Settings ===== -->
+    <section class="card" id="calculator">
+      <h2>Settings</h2>
+      <div class="grid">
+        <label class="field">
+          <span>Currency</span>
+          <select id="currency">
+            <option value="£">British pound (£)</option>
+            <option value="$">US dollar ($)</option>
+            <option value="€">Euro (€)</option>
+            <option value="৳">Bangladeshi taka (৳)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Gold price per gram</span>
+          <input type="number" id="goldPrice" value="100.27" min="0" step="0.01">
+        </label>
+        <label class="field">
+          <span>Silver price per gram</span>
+          <input type="number" id="silverPrice" placeholder="Today's price" min="0" step="0.01">
+        </label>
+        <label class="field">
+          <span>Nisab based on</span>
+          <select id="nisabBasis">
+            <option value="gold">Gold · 87.48 g</option>
+            <option value="silver">Silver · 612.36 g</option>
+          </select>
+        </label>
+      </div>
+      <p class="nisab-line">Nisab today <strong id="nisabAmount">£0.00</strong></p>
+    </section>
+
+    <!-- ===== Family members ===== -->
+    <div id="members">
+      <section class="card member">
+                <div class="member-head">
+          <input type="text" class="member-name" placeholder="You" aria-label="Name">
+          <button type="button" class="remove">Remove</button>
+        </div>
+
+        <p class="group-label">What they own</p>
+        <div class="grid">
+          <label class="field"><span>Cash in hand</span>
+            <input type="number" class="money" min="0" placeholder="0"></label>
+          <label class="field"><span>Bank and mobile wallet balances</span>
+            <input type="number" class="money" min="0" placeholder="0"></label>
+          <label class="field"><span>Shares, funds, DPS, savings</span>
+            <input type="number" class="money" min="0" placeholder="0"></label>
+          <label class="field"><span>Business stock for sale</span>
+            <input type="number" class="money" min="0" placeholder="0"></label>
+          <label class="field"><span>Money owed to you (expected back)</span>
+            <input type="number" class="money" min="0" placeholder="0"></label>
+          <label class="field"><span>Other zakatable wealth</span>
+            <input type="number" class="money" min="0" placeholder="0"></label>
+          <label class="field"><span>Gold you own (grams)</span>
+            <input type="number" class="gold-grams" min="0" placeholder="0"></label>
+          <label class="field"><span>Silver you own (grams)</span>
+            <input type="number" class="silver-grams" min="0" placeholder="0"></label>
+        </div>
+
+        <p class="group-label minus">Minus</p>
+        <label class="field narrow"><span>Debts and bills due now</span>
+          <input type="number" class="debts" min="0" placeholder="0"></label>
+        <p class="hint">Only what is due now or within the year, such as loan instalments, rent and unpaid bills.</p>
+
+        <label class="check">
+          <input type="checkbox" class="full-year" checked>
+          This wealth has stayed at or above the nisab for a full year
+        </label>
+
+        <div class="member-result">
+          <span class="badge">Below nisab</span>
+          <span class="net">Net £0.00</span>
+          <strong class="zakat">Zakat £0.00</strong>
+        </div>
+      </section>
+    </div>
+
+    <button type="button" id="addMember" class="add-member">+ Add family member</button>
+
+    <!-- ===== Household total ===== -->
+    <section class="card summary">
+      <p class="group-label">Household zakat due</p>
+      <p class="total" id="householdTotal">£0.00</p>
+      <p class="hint" id="householdCount">People who owe zakat: 0 of 1</p>
+      <ul class="breakdown" id="breakdown"></ul>
+    </section>
+
+    <!-- ===== What is zakat ===== -->
+    <section class="info" id="how">
+      <h2 class="section-title">What is zakat?</h2>
+      <p>Zakat is one of the five pillars of Islam. Every adult Muslim whose wealth stays at or above a minimum amount, called the nisab, for a full lunar year gives 2.5% of it to people in need.</p>
+      <p>The nisab is the value of 87.48 grams of gold or 612.36 grams of silver, so it goes up and down with their prices.</p>
+    </section>
+
+    <section class="info-grid">
+      <div class="card">
+        <h2>How it is worked out</h2>
+        <ol class="steps">
+          <li>Add up everything each person owns that counts for zakat.</li>
+          <li>Take away debts and bills that are due now.</li>
+          <li>Compare what is left with the nisab.</li>
+          <li>If it is at or above the nisab and has been for a full lunar year, zakat is 2.5% of it.</li>
+          <li>Add up everyone's zakat to get the household total.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>What counts</h2>
+        <p class="group-label">Include</p>
+        <ul class="list yes">
+          <li>Cash at home and in the bank</li>
+          <li>Gold and silver</li>
+          <li>Shares, funds and savings schemes</li>
+          <li>Stock you are holding to sell</li>
+          <li>Money you are owed and expect back</li>
+        </ul>
+        <p class="group-label minus">Leave out</p>
+        <ul class="list no">
+          <li>The home you live in</li>
+          <li>Your car, furniture and clothes</li>
+          <li>Tools and equipment you use for work</li>
+          <li>Debts that are not due this year</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section id="faq">
+      <h2 class="section-title">Common questions</h2>
+
+      <details class="faq">
+        <summary>Can one person pay zakat for the whole family?</summary>
+        <p>Zakat is worked out on each person's own wealth, which is why this calculator checks everyone separately. One person can pay on behalf of others, as long as they agree to it.</p>
+      </details>
+
+      <details class="faq">
+        <summary>Should I use the gold or silver nisab?</summary>
+        <p>The silver nisab is much lower, so more people end up paying. Many scholars recommend it because it benefits the poor more, while others use gold. Ask your local scholar which your community follows.</p>
+      </details>
+
+      <details class="faq">
+        <summary>Do I pay zakat on jewellery I wear?</summary>
+        <p>Scholars differ. The Hanafi school says yes, while the other main schools generally say jewellery worn regularly is exempt. Gold kept as savings counts either way.</p>
+      </details>
+
+      <details class="faq">
+        <summary>What about pensions?</summary>
+        <p>Views differ, often depending on whether you can access the money now. If you are unsure, ask a scholar or a zakat organisation.</p>
+      </details>
+
+      <details class="faq">
+        <summary>When should I pay?</summary>
+        <p>When your zakat year is complete. Many people choose Ramadan, and it helps to keep to the same date each year.</p>
+      </details>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>This calculator is a guide. Please check with a scholar if you are unsure.</p>
+      <p>© 2026 Family Zakat Calculator</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
