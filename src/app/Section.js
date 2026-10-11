@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { formatMoney } from "./money";
-import { sectionTotals } from "./sections";
+import { sectionTotals, rowAmount } from "./sections";
 
 export default function Section({ section, rows, onChange, price, currency }) {
   // Whether this section is open. Rare sections start closed.
   const [open, setOpen] = useState(!section.collapsed);
+
+  // ---------- Normal rows ----------
 
   function updateRow(id, field, newValue) {
     onChange(rows.map((row) =>
@@ -21,7 +23,9 @@ export default function Section({ section, rows, onChange, price, currency }) {
         value: "",
         minus: false,
         rate: section.rate,
-        isNew: true, // so the cursor goes straight into its name box
+        group: false,
+        items: [],
+        isNew: true,
       },
     ]);
   }
@@ -30,7 +34,41 @@ export default function Section({ section, rows, onChange, price, currency }) {
     onChange(rows.filter((row) => row.id !== id));
   }
 
-  // Scroll up to the price box in the settings and put the cursor in it
+  // ---------- Banks inside a group (e.g. Bank loans) ----------
+
+  function updateItem(rowId, itemId, field, newValue) {
+    onChange(rows.map((row) =>
+      row.id === rowId
+        ? {
+            ...row,
+            items: row.items.map((item) =>
+              item.id === itemId ? { ...item, [field]: newValue } : item
+            ),
+          }
+        : row
+    ));
+  }
+
+  function addItem(rowId) {
+    onChange(rows.map((row) =>
+      row.id === rowId
+        ? {
+            ...row,
+            items: [...row.items, { id: rowId + "-" + Date.now(), label: "", value: "", isNew: true }],
+          }
+        : row
+    ));
+  }
+
+  function removeItem(rowId, itemId) {
+    onChange(rows.map((row) =>
+      row.id === rowId
+        ? { ...row, items: row.items.filter((item) => item.id !== itemId) }
+        : row
+    ));
+  }
+
+  // Scroll up to the price box and put the cursor in it (only exists if prices failed to load)
   function goToPrice() {
     const box = document.getElementById(section.metal + "Price");
     if (!box) return;
@@ -84,42 +122,96 @@ export default function Section({ section, rows, onChange, price, currency }) {
             </p>
           )}
 
-          {rows.map((row) => (
-            <div className={row.minus ? "row minus" : "row"} key={row.id}>
-              <input
-                className="row-label"
-                placeholder={section.rowPlaceholder || "Name this row"}
-                aria-label="Name"
-                value={row.label}
-                autoFocus={row.isNew}
-                onChange={(e) => updateRow(row.id, "label", e.target.value)}
-              />
-              <input
-                className="row-value"
-                type="number"
-                min="0"
-                step="any"
-                placeholder={section.metal ? "grams" : "Amount"}
-                aria-label={section.metal ? "Grams" : "Amount"}
-                value={row.value}
-                onChange={(e) => updateRow(row.id, "value", e.target.value)}
-              />
-              {section.metal && (
-                <span className="row-worth">
-                  {formatMoney((Number(row.value) || 0) * price, currency)}
-                </span>
-              )}
-              {row.rate !== 2.5 && <span className="rate-tag">{row.rate}%</span>}
-              <button
-                type="button"
-                className="remove"
-                aria-label="Remove row"
-                onClick={() => removeRow(row.id)}
-              >
-                ✕
-              </button>
-            </div>
-          ))}
+          {rows.map((row) =>
+            row.group ? (
+              // ---------- A group, e.g. Bank loans with a list of banks ----------
+              <div className="row-group" key={row.id}>
+                <div className="row-group-head">
+                  <span className="row-group-title">{row.label}</span>
+                  <span className="row-group-total">{formatMoney(rowAmount(row), currency)}</span>
+                  <button
+                    type="button"
+                    className="remove"
+                    aria-label={"Remove " + row.label}
+                    onClick={() => removeRow(row.id)}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {row.items.map((item) => (
+                  <div className="row sub-row" key={item.id}>
+                    <input
+                      className="row-label"
+                      placeholder={row.itemPlaceholder || "Name"}
+                      aria-label="Name"
+                      value={item.label}
+                      autoFocus={item.isNew}
+                      onChange={(e) => updateItem(row.id, item.id, "label", e.target.value)}
+                    />
+                    <input
+                      className="row-value"
+                      type="number"
+                      min="0"
+                      step="any"
+                      placeholder="Amount"
+                      aria-label="Amount"
+                      value={item.value}
+                      onChange={(e) => updateItem(row.id, item.id, "value", e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="remove"
+                      aria-label="Remove"
+                      onClick={() => removeItem(row.id, item.id)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+
+                <button type="button" className="add-row add-sub" onClick={() => addItem(row.id)}>
+                  + {row.addItemLabel || "Add"}
+                </button>
+              </div>
+            ) : (
+              // ---------- A normal row ----------
+              <div className={row.minus ? "row minus" : "row"} key={row.id}>
+                <input
+                  className="row-label"
+                  placeholder={section.rowPlaceholder || "Name this row"}
+                  aria-label="Name"
+                  value={row.label}
+                  autoFocus={row.isNew}
+                  onChange={(e) => updateRow(row.id, "label", e.target.value)}
+                />
+                <input
+                  className="row-value"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder={section.metal ? "grams" : "Amount"}
+                  aria-label={section.metal ? "Grams" : "Amount"}
+                  value={row.value}
+                  onChange={(e) => updateRow(row.id, "value", e.target.value)}
+                />
+                {section.metal && (
+                  <span className="row-worth">
+                    {formatMoney((Number(row.value) || 0) * price, currency)}
+                  </span>
+                )}
+                {row.rate !== 2.5 && <span className="rate-tag">{row.rate}%</span>}
+                <button
+                  type="button"
+                  className="remove"
+                  aria-label="Remove row"
+                  onClick={() => removeRow(row.id)}
+                >
+                  ✕
+                </button>
+              </div>
+            )
+          )}
 
           <button type="button" className="add-row" onClick={addRow}>
             + {section.addLabel || "Add row"}

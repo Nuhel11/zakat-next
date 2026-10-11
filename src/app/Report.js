@@ -1,40 +1,51 @@
-import { SECTIONS } from "./sections";
+import { SECTIONS, rowAmount } from "./sections";
 import { formatMoney } from "./money";
 
-export default function Report({ people, names, results, settings, prices, nisab }) {
-  const money = (amount) => formatMoney(amount, settings.currency);
+export default function Report({ people, names, results, currency, nisabBasis, prices, nisab, printId }) {
+  const money = (amount) => formatMoney(amount, currency);
   const today = new Date().toLocaleDateString("en-GB", {
     day: "numeric", month: "long", year: "numeric",
   });
-  const householdTotal = results.reduce((sum, result) => sum + result.total, 0);
+
+  // Who goes in this PDF: one person (printId), or everyone (null)
+  const included = people
+    .map((person, index) => ({ person, index }))
+    .filter(({ person }) => printId === null || person.id === printId);
+
+  const single = printId !== null && included.length === 1;
+  const headlineAmount = included.reduce((sum, { index }) => sum + results[index].total, 0);
 
   return (
     <div className="report">
-      <h1>Zakat calculation</h1>
+      <h1>
+        {single
+          ? "Zakat calculation for " + names[included[0].index]
+          : "Household zakat calculation"}
+      </h1>
       <p className="report-meta">
         Worked out on {today} · Gold {money(prices.gold)}/g · Silver {money(prices.silver)}/g ·
-        Nisab {money(nisab)} (based on {settings.nisabBasis})
+        Nisab {money(nisab)} (based on {nisabBasis})
       </p>
 
       <div className="report-total">
-        <span>Household zakat due</span>
-        <strong>{money(householdTotal)}</strong>
+        <span>{single ? "Zakat due" : "Household zakat due"}</span>
+        <strong>{money(headlineAmount)}</strong>
       </div>
 
-      {people.map((person, index) => {
+      {included.map(({ person, index }) => {
         const result = results[index];
 
         // Only the sections where something was filled in
         const filledSections = SECTIONS
           .map((section) => ({
             section: section,
-            rows: person.rows[section.id].filter((row) => Number(row.value) > 0),
+            rows: person.rows[section.id].filter((row) => rowAmount(row) > 0),
           }))
           .filter((item) => item.rows.length > 0);
 
         return (
           <div className="report-person" key={person.id}>
-            <h2>{names[index]}</h2>
+            {!single && <h2>{names[index]}</h2>}
 
             {filledSections.length === 0 ? (
               <p>Nothing entered.</p>
@@ -43,23 +54,39 @@ export default function Report({ people, names, results, settings, prices, nisab
                 <tbody>
                   {filledSections.map(({ section, rows }) => {
                     const price = section.metal ? prices[section.metal] : 1;
+                    const sign = section.liability ? "− " : "";
+
                     return [
                       <tr className="report-section" key={section.id}>
                         <th colSpan={2}>{section.title}</th>
                       </tr>,
-                      ...rows.map((row) => (
-                        <tr key={row.id}>
-                          <td>
-                            {row.label || "Unnamed"}
-                            {section.metal ? ` (${row.value} g)` : ""}
-                            {row.rate !== 2.5 ? ` at ${row.rate}%` : ""}
-                          </td>
-                          <td className="num">
-                            {row.minus ? "− " : ""}
-                            {money(Number(row.value) * price)}
-                          </td>
-                        </tr>
-                      )),
+
+                      ...rows.flatMap((row) =>
+                        row.group
+                          ? // A group: one line per bank, e.g. "Bank loans: HSBC"
+                            row.items
+                              .filter((item) => Number(item.value) > 0)
+                              .map((item) => (
+                                <tr key={item.id}>
+                                  <td>{row.label}: {item.label || "Unnamed"}</td>
+                                  <td className="num">{sign}{money(Number(item.value))}</td>
+                                </tr>
+                              ))
+                          : // A normal row
+                            [
+                              <tr key={row.id}>
+                                <td>
+                                  {row.label || "Unnamed"}
+                                  {section.metal ? ` (${row.value} g)` : ""}
+                                  {row.rate !== 2.5 ? ` at ${row.rate}%` : ""}
+                                </td>
+                                <td className="num">
+                                  {row.minus ? "− " : sign}
+                                  {money(Number(row.value) * price)}
+                                </td>
+                              </tr>,
+                            ]
+                      ),
                     ];
                   })}
                 </tbody>

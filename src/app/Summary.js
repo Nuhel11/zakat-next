@@ -1,7 +1,9 @@
 import { formatMoney } from "./money";
 
-export default function Summary({ title, result, nisab, currency, fullYear, onFullYearChange }) {
-  // A shorter name, so the lines below are easier to read
+export default function Summary({
+  title, name, result, nisab, currency, fullYear,
+  onFullYearChange, onDownload, onAddNext,
+}) {
   const money = (amount) => formatMoney(amount, currency);
 
   // Explain why no zakat is due, if that's the case
@@ -9,7 +11,7 @@ export default function Summary({ title, result, nisab, currency, fullYear, onFu
   if (nisab === 0) {
     message = "Enter today's gold or silver price in the settings to work out the nisab.";
   } else if (!result.aboveNisab) {
-    message = "Your net wealth is below the nisab, so no zakat is due on it this year.";
+    message = "Net wealth is below the nisab, so no zakat is due on it this year.";
   } else if (!fullYear) {
     message = "Zakat on wealth is only due once it has stayed above the nisab for a full lunar year.";
   }
@@ -51,6 +53,15 @@ export default function Summary({ title, result, nisab, currency, fullYear, onFu
       </label>
 
       {message && <p className="hint">{message}</p>}
+
+      <div className="actions">
+        <button type="button" className="button-primary" onClick={onDownload}>
+          Download {name}'s PDF
+        </button>
+        <button type="button" className="button-secondary" onClick={onAddNext}>
+          Done – add the next person
+        </button>
+      </div>
     </section>
   );
 }

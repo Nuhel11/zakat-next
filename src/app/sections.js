@@ -2,13 +2,14 @@
 // rate is a percentage. A row can have its own rate, or minus: true to be taken away.
 // metal: gold/silver rows are in grams. separate: worked out on its own (crops).
 // liability: the rows are debts, taken away from wealth.
+// group: a row that holds its own list (e.g. Bank loans with one line per bank).
 export const SECTIONS = [
   {
     id: "gold",
     title: "Gold",
     rate: 2.5,
     metal: "gold",
-    help: "Enter the weight in grams. It is valued at the gold price in the settings.",
+    help: "Enter the weight in grams. It is valued at today's gold price.",
     rows: [{ label: "Gold jewellery" }, { label: "Gold coins and bars" }],
   },
   {
@@ -16,10 +17,10 @@ export const SECTIONS = [
     title: "Silver",
     rate: 2.5,
     metal: "silver",
-    help: "Jewellery, utensils and ornaments in grams. Household silver is usually about 90% pure, so use 90% of its weight.",
+    help: "Jewellery, utensils and ornaments in grams, valued at today's silver price. Household silver is usually about 90% pure, so use 90% of its weight.",
     rows: [{ label: "Silver jewellery" }, { label: "Silver items" }],
   },
-    {
+  {
     id: "cash",
     title: "Cash and bank",
     rate: 2.5,
@@ -100,6 +101,7 @@ export const SECTIONS = [
   {
     id: "animals",
     title: "Animals, poultry and fish farming",
+    collapsed: true,
     rate: 2.5,
     help: "Animals or birds over six months old. One in forty, or its value.",
     rows: [{ label: "Value of animals" }],
@@ -111,15 +113,33 @@ export const SECTIONS = [
     liability: true,
     help: "Debts you owe that are not already taken off above, such as loans, credit cards and tax due. Scholars differ on long-term debts like a mortgage: many only allow what is due in the coming year.",
     addLabel: "Add debt",
-    rowPlaceholder: "e.g. Barclaycard",
     rows: [
       { label: "Loans from friends or family" },
-      { label: "Credit cards" },
-      { label: "Bank loans" },
+      {
+        label: "Credit cards",
+        group: true,
+        itemPlaceholder: "Card name, e.g. Barclaycard",
+        addItemLabel: "Add card",
+      },
+      {
+        label: "Bank loans",
+        group: true,
+        itemPlaceholder: "Bank name, e.g. HSBC",
+        addItemLabel: "Add bank",
+      },
       { label: "Tax owed" },
     ],
   },
 ];
+
+// How much one row is worth.
+// A normal row is its own value. A group (like Bank loans) is the total of the banks inside it.
+export function rowAmount(row) {
+  if (row.group) {
+    return row.items.reduce((sum, item) => sum + (Number(item.value) || 0), 0);
+  }
+  return Number(row.value) || 0;
+}
 
 // Adds up one section: its total value and its zakat.
 // price is the price per gram for gold and silver, and 1 for everything else.
@@ -128,7 +148,7 @@ export function sectionTotals(rows, price = 1) {
   let zakat = 0;
 
   rows.forEach((row) => {
-    const amount = (Number(row.value) || 0) * price * (row.minus ? -1 : 1);
+    const amount = rowAmount(row) * price * (row.minus ? -1 : 1);
     value += amount;
     zakat += (amount * row.rate) / 100;
   });
@@ -136,7 +156,7 @@ export function sectionTotals(rows, price = 1) {
   return { value: value, zakat: Math.max(zakat, 0) }; // zakat is never negative
 }
 
-// Works out the whole calculation
+// Works out the whole calculation for one person
 export function calculateZakat(allRows, prices, nisab, fullYear) {
   let assets = 0;
   let debts = 0;

@@ -778,6 +778,119 @@ h1 {
   margin-top: 6px;
 }
 
+/* ---------- Today's prices (in the green band) ---------- */
+
+.price-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-top: 24px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+}
+
+.price-strip strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.price-time {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.price-strip.failed {
+  display: block;
+  background: rgba(163, 59, 47, 0.3);
+}
+
+.price-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.price-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.price-inputs input {
+  font: inherit;
+  color: var(--text);
+  width: 170px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+}
+
+/* ---------- Name box ---------- */
+
+.name-field input {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.field input.invalid {
+  outline: 2px solid var(--red);
+  border-color: transparent;
+}
+
+.name-warning {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* The "+ Add person" tab sits on the green band, so give it a background */
+.tab.add {
+  background: white;
+}
+
+/* ---------- Groups inside a section (e.g. Bank loans) ---------- */
+
+.row-group {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fcfaf6;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.row-group-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.row-group-title {
+  flex: 1;
+  font-weight: 600;
+}
+
+.row-group-total {
+  font-weight: 600;
+  color: var(--red);
+}
+
+/* Each bank sits indented under its group */
+.sub-row {
+  padding-left: 14px;
+  border-left: 2px solid var(--gold-light);
+}
+
+.add-sub {
+  margin-left: 16px;
+}
+
 /* ---------- Phones ---------- */
 
 @media (max-width: 600px) {
@@ -939,4 +1052,57 @@ h1 {
     font-size: 9pt;
     color: #777;
   }
+}
+/* ---------- Buttons under a person's result ---------- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.button-secondary {
+  font: inherit;
+  font-weight: 600;
+  color: var(--green);
+  background: white;
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  padding: 12px 22px;
+  cursor: pointer;
+}
+
+.button-secondary:hover {
+  background: var(--green-light);
+}
+
+/* The small "PDF" button next to each name in the household card */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.small-button {
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+
+.small-button:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.household .actions {
+  border-color: rgba(255, 255, 255, 0.15);
 }
