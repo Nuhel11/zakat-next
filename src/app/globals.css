@@ -1,0 +1,942 @@
+/* =========================================================
+   Family Zakat Calculator · styles
+   ========================================================= */
+
+:root {
+  --green: #0f5a3c;
+  --green-dark: #0b3d2a;
+  --green-light: #e6f1ec;
+  --gold: #c9a24a;
+  --gold-light: #f5ecd6;
+  --red: #a33b2f;
+  --red-light: #fbeeec;
+  --text: #1d2420;
+  --muted: #5f6b65;
+  --bg: #f5f2eb;
+  --card: #ffffff;
+  --border: #e3ddd0;
+  --radius: 18px;
+  --shadow: 0 1px 2px rgba(16, 40, 30, 0.04), 0 10px 30px rgba(16, 40, 30, 0.08);
+
+  /* The star pattern on the dark band, drawn in SVG */
+  --pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23c9a24a' stroke-opacity='0.22'%3E%3Crect x='20' y='20' width='40' height='40'/%3E%3Cpath d='M40 11.7 68.3 40 40 68.3 11.7 40Z'/%3E%3Ccircle cx='40' cy='40' r='9'/%3E%3Cpath d='M0 0 20 20M80 0 60 20M0 80 20 60M80 80 60 60'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* To use your own photo: put it in the "public" folder and change none to url("/hero.jpg") */
+  --hero-photo: none;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  position: relative;
+  font-family: var(--font-body), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding-bottom: 72px; /* room for the total bar */
+}
+
+h1,
+h2,
+.total,
+.logo {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ---------- Patterned band at the top ---------- */
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 440px;
+  background-color: var(--green-dark);
+  background-image:
+    var(--pattern),
+    linear-gradient(160deg, rgba(15, 90, 60, 0.9), rgba(11, 61, 42, 0.97)),
+    var(--hero-photo);
+  background-size: 80px 80px, cover, cover;
+  background-position: center top;
+}
+
+/* Fades the band into the page, like a shadow */
+.backdrop::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 140px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+}
+
+/* Keep everything above the band */
+.site-header,
+main,
+.site-footer {
+  position: relative;
+}
+
+/* ---------- Header ---------- */
+
+.site-header {
+  color: white;
+  padding: 18px 0;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+}
+
+.logo::before {
+  content: "✦";
+  color: var(--gold);
+  margin-right: 8px;
+}
+
+.nav {
+  display: flex;
+  gap: 22px;
+}
+
+.nav a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.nav a:hover {
+  color: white;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  padding: 48px 0 40px;
+  color: white;
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+}
+
+.intro {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 600px;
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* ---------- Form fields ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.field input,
+.field select,
+.row input {
+  font: inherit;
+  color: var(--text);
+  background: #fdfcf9;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.field input:focus,
+.field select:focus,
+.row input:focus {
+  outline: 2px solid var(--green);
+  border-color: transparent;
+  background: white;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.group-label.minus {
+  color: var(--red);
+  margin-top: 20px;
+}
+
+/* ---------- Settings ---------- */
+
+.nisab-line {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+  color: var(--muted);
+}
+
+.nisab-line strong {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.5rem;
+  color: var(--green);
+  margin-left: 8px;
+}
+
+/* ---------- People tabs ---------- */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 16px;
+  scroll-margin-top: 16px;
+}
+
+.tab {
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.tab.add {
+  border-style: dashed;
+  color: var(--green);
+  background: transparent;
+}
+
+.person-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.person-head .field {
+  flex: 1;
+  max-width: 320px;
+}
+
+/* ---------- Sections that fold away ---------- */
+
+.card h2.section-head {
+  margin-bottom: 0;
+}
+
+.section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.section-toggle > span:first-child {
+  flex: 1;
+}
+
+.section-peek {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.chevron {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--green);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+.section-toggle:hover .chevron {
+  border-color: var(--gold);
+  background: var(--gold-light);
+}
+
+.section-help {
+  margin: 8px 0 16px;
+}
+
+/* ---------- Rows ---------- */
+
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.row-label {
+  flex: 2;
+}
+
+.row-value {
+  flex: 1;
+}
+
+/* Name boxes look like something you can type in */
+.row input.row-label {
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235f6b65' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+}
+
+.row input.row-label:hover {
+  border-color: var(--green);
+}
+
+.row input.row-label:focus {
+  background-color: white;
+}
+
+.row.minus .row-value,
+.liability .row-value {
+  color: var(--red);
+}
+
+.rate-tag {
+  align-self: center;
+  width: 52px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--green);
+  background: var(--green-light);
+  padding: 4px 0;
+  border-radius: 999px;
+}
+
+.row-worth {
+  align-self: center;
+  min-width: 110px;
+  text-align: right;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.remove {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.remove:hover {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.add-row {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--green);
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.add-row:hover {
+  border-color: var(--gold);
+  background: var(--gold-light);
+}
+
+.section-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.section-total strong {
+  color: var(--text);
+  font-size: 1.2rem;
+}
+
+.liability {
+  border-color: #e6c7c2;
+}
+
+.warning {
+  font-size: 0.85rem;
+  color: var(--red);
+  background: var(--red-light);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.warning-link {
+  font: inherit;
+  font-weight: 600;
+  color: var(--red);
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- One person's result ---------- */
+
+.summary {
+  border-top: 4px solid var(--gold);
+}
+
+.total {
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--green);
+}
+
+.breakdown {
+  list-style: none;
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.breakdown li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.breakdown li:last-child {
+  border-bottom: none;
+}
+
+.breakdown small {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.breakdown strong {
+  font-size: 1.05rem;
+}
+
+.minus-amount {
+  color: var(--red);
+}
+
+.member-result {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.badge.above {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-light);
+}
+
+.net {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.zakat {
+  margin-left: auto;
+  font-size: 1.3rem;
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.check input {
+  accent-color: var(--green);
+  width: 18px;
+  height: 18px;
+  margin-top: 4px;
+}
+
+/* ---------- Household total (dark card) ---------- */
+
+.household {
+  margin-top: 32px;
+  scroll-margin-top: 16px;
+  color: white;
+  border: none;
+  background-color: var(--green-dark);
+  background-image: var(--pattern);
+  background-size: 80px 80px;
+}
+
+.household .group-label {
+  color: var(--gold-light);
+}
+
+.household .total {
+  color: var(--gold);
+}
+
+.household .hint,
+.household .breakdown small {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.household .breakdown,
+.household .breakdown li {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.link-button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+}
+
+.link-button:hover {
+  color: var(--gold);
+}
+
+/* ---------- Download button ---------- */
+
+.download {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 8px 0 24px;
+}
+
+.download .hint {
+  margin-top: 0;
+}
+
+.button-primary {
+  font: inherit;
+  font-weight: 600;
+  color: var(--green-dark);
+  background: var(--gold);
+  border: none;
+  border-radius: 999px;
+  padding: 12px 26px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.button-primary:hover {
+  background: #d8b35c;
+}
+
+/* ---------- Total bar at the bottom of the screen ---------- */
+
+.total-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  color: white;
+  text-decoration: none;
+  background: var(--green-dark);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.total-bar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.total-bar strong {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.3rem;
+  color: var(--gold);
+}
+
+/* ---------- About page ---------- */
+
+.section-title {
+  font-size: 1.7rem;
+  font-weight: 600;
+  margin: 48px 0 14px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.info-grid .card {
+  margin-bottom: 0;
+}
+
+.steps {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.steps li::marker {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.list li::before {
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.list.yes li::before {
+  content: "✓";
+  color: var(--green);
+}
+
+.list.no li::before {
+  content: "✕";
+  color: var(--red);
+}
+
+.faq {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.faq summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.faq p {
+  margin-top: 10px;
+  color: var(--muted);
+}
+
+.faq[open] {
+  border-color: var(--gold);
+}
+
+.back-link {
+  margin-top: 32px;
+}
+
+.back-link a {
+  color: var(--green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 64px;
+  padding: 24px 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.site-footer p + p {
+  margin-top: 6px;
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 600px) {
+  .backdrop {
+    height: 480px;
+  }
+
+  .hero {
+    padding: 28px 0 28px;
+  }
+
+  h1 {
+    font-size: 2.1rem;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .row-label {
+    flex: 1 1 100%;
+  }
+
+  .row-worth {
+    min-width: 0;
+  }
+
+  .total {
+    font-size: 2.3rem;
+  }
+
+  /* 16px stops iPhones zooming in when you tap a box */
+  .field input,
+  .field select,
+  .row input {
+    font-size: 16px;
+  }
+}
+
+/* ---------- PDF report: hidden on screen, shown when printing ---------- */
+
+.report {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 16mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    background: white;
+    padding: 0;
+  }
+
+  /* Hide the website, show only the report */
+  .backdrop,
+  .site-header,
+  .site-footer {
+    display: none !important;
+  }
+
+  main > *:not(.report) {
+    display: none !important;
+  }
+
+  .report {
+    display: block;
+    font-size: 10.5pt;
+    color: black;
+  }
+
+  .report h1 {
+    font-size: 22pt;
+    color: var(--green-dark);
+    margin-bottom: 4px;
+  }
+
+  .report-meta {
+    color: #555;
+    margin-bottom: 16px;
+  }
+
+  .report-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border: 2px solid var(--green);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 13pt;
+  }
+
+  .report-total strong {
+    font-size: 18pt;
+    color: var(--green);
+  }
+
+  .report-person + .report-person {
+    break-before: page; /* each person on a new page */
+  }
+
+  .report h2 {
+    font-size: 15pt;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+
+  .report table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .report td,
+  .report th {
+    padding: 5px 0;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: left;
+  }
+
+  .report .num {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .report-section th {
+    padding-top: 14px;
+    font-size: 9.5pt;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .report-summary {
+    margin-top: 14px;
+  }
+
+  .report-due td {
+    font-weight: 700;
+    font-size: 12pt;
+    border-bottom: none;
+    padding-top: 8px;
+  }
+
+  .report-note {
+    margin-top: 24px;
+    font-size: 9pt;
+    color: #777;
+  }
+}
