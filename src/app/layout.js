@@ -29,7 +29,9 @@ export default function RootLayout({ children }) {
             <Link href="/" className="logo">Zakat Calculator</Link>
             <nav className="nav">
               <Link href="/">Calculator</Link>
-              <Link href="/about">About &amp; FAQ</Link>
+              <a href="/about" target="_blank" rel="noopener noreferrer">
+                About &amp; FAQ
+              </a>
             </nav>
           </div>
         </header>
