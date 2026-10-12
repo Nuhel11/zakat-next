@@ -145,7 +145,7 @@ export default function Home() {
         <h1>Zakat Calculator</h1>
         <p className="intro">
           Enter your full name and what you own. Download your PDF, then start the
-          next person, for example your wife or mother.
+          next person.
         </p>
         <PriceStrip
           prices={prices}
