@@ -2,6 +2,7 @@
 // rate is a percentage. A row can have its own rate, or minus: true to be taken away.
 // metal: gold/silver rows are in grams. separate: worked out on its own (crops).
 // liability: the rows are debts, taken away from wealth.
+// fixed: one line only — no renaming, adding or removing (gold and silver).
 // group: a row that holds its own list (e.g. Bank loans with one line per bank).
 export const SECTIONS = [
   {
@@ -9,16 +10,18 @@ export const SECTIONS = [
     title: "Gold",
     rate: 2.5,
     metal: "gold",
-    help: "Enter the weight in grams. It is valued at today's gold price.",
-    rows: [{ label: "Gold jewellery" }],
+    fixed: true,
+    help: "Enter the total weight of your gold in grams. It is valued at today's gold price.",
+    rows: [{ label: "Gold" }],
   },
   {
     id: "silver",
     title: "Silver",
     rate: 2.5,
     metal: "silver",
-    help: "Jewellery, utensils and ornaments in grams, valued at today's silver price. Household silver is usually about 90% pure, so use 90% of its weight.",
-    rows: [{ label: "Silver jewellery" }],
+    fixed: true,
+    help: "Enter the total weight of your silver in grams. Household silver is usually about 90% pure, so use 90% of its weight.",
+    rows: [{ label: "Silver" }],
   },
   {
     id: "cash",

@@ -220,6 +220,7 @@ export default function Section({ section, rows, onChange, price, currency }) {
             )
           )}
 
+          {/* Gold and silver have no "Add row" button */}
           {!section.fixed && (
             <button type="button" className="add-row" onClick={addRow}>
               + {section.addLabel || "Add row"}
