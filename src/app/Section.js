@@ -68,7 +68,7 @@ export default function Section({ section, rows, onChange, price, currency }) {
     ));
   }
 
-  // Scroll up to the price box and put the cursor in it (only exists if prices failed to load)
+  // Scroll up to the price box (only exists if prices failed to load)
   function goToPrice() {
     const box = document.getElementById(section.metal + "Price");
     if (!box) return;
@@ -177,21 +177,26 @@ export default function Section({ section, rows, onChange, price, currency }) {
             ) : (
               // ---------- A normal row ----------
               <div className={row.minus ? "row minus" : "row"} key={row.id}>
-                <input
-                  className="row-label"
-                  placeholder={section.rowPlaceholder || "Name this row"}
-                  aria-label="Name"
-                  value={row.label}
-                  autoFocus={row.isNew}
-                  onChange={(e) => updateRow(row.id, "label", e.target.value)}
-                />
+                {section.fixed ? (
+                  // Gold and silver: a fixed name that can't be changed
+                  <span className="row-fixed-label">{row.label}</span>
+                ) : (
+                  <input
+                    className="row-label"
+                    placeholder={section.rowPlaceholder || "Name this row"}
+                    aria-label="Name"
+                    value={row.label}
+                    autoFocus={row.isNew}
+                    onChange={(e) => updateRow(row.id, "label", e.target.value)}
+                  />
+                )}
                 <input
                   className="row-value"
                   type="number"
                   min="0"
                   step="any"
                   placeholder={section.metal ? "grams" : "Amount"}
-                  aria-label={section.metal ? "Grams" : "Amount"}
+                  aria-label={section.metal ? row.label + " in grams" : "Amount"}
                   value={row.value}
                   onChange={(e) => updateRow(row.id, "value", e.target.value)}
                 />
@@ -201,21 +206,25 @@ export default function Section({ section, rows, onChange, price, currency }) {
                   </span>
                 )}
                 {row.rate !== 2.5 && <span className="rate-tag">{row.rate}%</span>}
-                <button
-                  type="button"
-                  className="remove"
-                  aria-label="Remove row"
-                  onClick={() => removeRow(row.id)}
-                >
-                  ✕
-                </button>
+                {!section.fixed && (
+                  <button
+                    type="button"
+                    className="remove"
+                    aria-label="Remove row"
+                    onClick={() => removeRow(row.id)}
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
             )
           )}
 
-          <button type="button" className="add-row" onClick={addRow}>
-            + {section.addLabel || "Add row"}
-          </button>
+          {!section.fixed && (
+            <button type="button" className="add-row" onClick={addRow}>
+              + {section.addLabel || "Add row"}
+            </button>
+          )}
 
           <div className="section-total">
             <span>{footerLabel}</span>

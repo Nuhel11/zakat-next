@@ -891,6 +891,19 @@ h1 {
   margin-left: 16px;
 }
 
+/* Gold and Silver: a fixed name instead of a text box */
+.row-fixed-label {
+  flex: 2;
+  align-self: center;
+  font-weight: 600;
+  padding: 10px 2px;
+}
+
+/* So the bottom bar's jump doesn't hide the heading */
+#result {
+  scroll-margin-top: 16px;
+}
+
 /* ---------- Phones ---------- */
 
 @media (max-width: 600px) {

@@ -10,7 +10,7 @@ export const SECTIONS = [
     rate: 2.5,
     metal: "gold",
     help: "Enter the weight in grams. It is valued at today's gold price.",
-    rows: [{ label: "Gold jewellery" }, { label: "Gold coins and bars" }],
+    rows: [{ label: "Gold jewellery" }],
   },
   {
     id: "silver",
@@ -18,7 +18,7 @@ export const SECTIONS = [
     rate: 2.5,
     metal: "silver",
     help: "Jewellery, utensils and ornaments in grams, valued at today's silver price. Household silver is usually about 90% pure, so use 90% of its weight.",
-    rows: [{ label: "Silver jewellery" }, { label: "Silver items" }],
+    rows: [{ label: "Silver jewellery" }],
   },
   {
     id: "cash",

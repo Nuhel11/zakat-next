@@ -17,7 +17,7 @@ export default function Summary({
   }
 
   return (
-    <section className="card summary">
+    <section className="card summary" id="result">
       <p className="group-label">{title}</p>
       <p className="total">{money(result.total)}</p>
 
@@ -59,7 +59,7 @@ export default function Summary({
           Download {name}'s PDF
         </button>
         <button type="button" className="button-secondary" onClick={onAddNext}>
-          Done – add the next person
+          Start the next person
         </button>
       </div>
     </section>
