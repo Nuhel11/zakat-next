@@ -6,8 +6,15 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-display" });
 
 export const metadata = {
-  title: "Family Zakat Calculator",
-  description: "Work out zakat for yourself and your family.",
+  title: "Zakat Calculator",
+  description: "Work out your zakat and download it as a PDF.",
+};
+
+// Stops iPhones zooming in when a box with small text is tapped
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }) {

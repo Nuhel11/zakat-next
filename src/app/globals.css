@@ -1002,6 +1002,22 @@ h1 {
   .row input {
     font-size: 16px;
   }
+
+
+/* Name boxes: smaller text and more room, so long names fit */
+  .row-label,
+  .row-fixed-label {
+    flex: 2 1 0;
+  }
+
+  .row-value {
+    flex: 1 1 0;
+  }
+
+  .row input.row-label,
+  .row-fixed-label {
+    font-size: 13px;
+  }
 }
 
 /* ---------- PDF report: hidden on screen, shown when printing ---------- */
