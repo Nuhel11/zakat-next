@@ -17,7 +17,7 @@ export default function Report({ person, name, result, currency, nisabBasis, pri
 
   return (
     <div className="report">
-      <h1>Zakat calculation for {name}</h1>
+            <h1>{name ? "Zakat calculation for " + name : "Zakat calculation"}</h1>
       <p className="report-meta">
         Worked out on {today} · Gold {money(prices.gold)}/g · Silver {money(prices.silver)}/g ·
         Nisab {money(nisab)} (based on {nisabBasis})

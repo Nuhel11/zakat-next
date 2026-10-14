@@ -1,5 +1,5 @@
 /* =========================================================
-   Family Zakat Calculator · styles
+   Zakat Calculator · styles
    ========================================================= */
 
 :root {
@@ -166,6 +166,60 @@ h1 {
   max-width: 600px;
 }
 
+/* ---------- Today's prices (in the green band) ---------- */
+
+.price-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-top: 24px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+}
+
+.price-strip strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.price-time {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.price-strip.failed {
+  display: block;
+  background: rgba(163, 59, 47, 0.3);
+}
+
+.price-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.price-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.price-inputs input {
+  font: inherit;
+  color: var(--text);
+  width: 170px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+}
+
 /* ---------- Cards ---------- */
 
 .card {
@@ -184,12 +238,6 @@ h1 {
 }
 
 /* ---------- Form fields ---------- */
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
 
 .field {
   display: flex;
@@ -219,6 +267,18 @@ h1 {
   background: white;
 }
 
+/* No up/down arrows in number boxes, anywhere on the site */
+.row input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.row input[type="number"]::-webkit-inner-spin-button,
+.row input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .hint {
   font-size: 0.85rem;
   color: var(--muted);
@@ -239,66 +299,15 @@ h1 {
   margin-top: 20px;
 }
 
-/* ---------- Settings ---------- */
-
-.nisab-line {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px dashed var(--border);
-  color: var(--muted);
-}
-
-.nisab-line strong {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: 1.5rem;
-  color: var(--green);
-  margin-left: 8px;
-}
-
-/* ---------- People tabs ---------- */
-
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 28px 0 16px;
-  scroll-margin-top: 16px;
-}
-
-.tab {
-  font: inherit;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: white;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.tab.active {
-  background: var(--green);
-  border-color: var(--green);
-  color: white;
-}
-
-.tab.add {
-  border-style: dashed;
-  color: var(--green);
-  background: transparent;
-}
-
-.person-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-}
+/* ---------- Name box ---------- */
 
 .person-head .field {
-  flex: 1;
-  max-width: 320px;
+  max-width: 420px;
+}
+
+.name-field input {
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 /* ---------- Sections that fold away ---------- */
@@ -385,6 +394,28 @@ h1 {
   background-color: white;
 }
 
+/* Gold and Silver: grams box on the left (same size as the name boxes) */
+.row-grams {
+  flex: 2;
+}
+
+/* Gold and Silver: the value in £ on the right, worked out automatically */
+.row-money {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .row.minus .row-value,
 .liability .row-value {
   color: var(--red);
@@ -402,14 +433,6 @@ h1 {
   border-radius: 999px;
 }
 
-.row-worth {
-  align-self: center;
-  min-width: 110px;
-  text-align: right;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
 .remove {
   font: inherit;
   font-size: 0.85rem;
@@ -424,6 +447,11 @@ h1 {
 .remove:hover {
   color: var(--red);
   border-color: var(--red);
+}
+
+/* An invisible ✕ that keeps the Gold / Silver boxes lined up with the others */
+.remove-spacer {
+  visibility: hidden;
 }
 
 .add-row {
@@ -482,10 +510,52 @@ h1 {
   cursor: pointer;
 }
 
-/* ---------- One person's result ---------- */
+/* ---------- Groups inside a section (e.g. Bank loans) ---------- */
+
+.row-group {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fcfaf6;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.row-group-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.row-group-title {
+  flex: 1;
+  font-weight: 600;
+}
+
+.row-group-total {
+  font-weight: 600;
+  color: var(--red);
+}
+
+/* Each bank sits indented under its group */
+.sub-row {
+  padding-left: 14px;
+  border-left: 2px solid var(--gold-light);
+}
+
+.add-sub {
+  margin-left: 16px;
+}
+
+/* ---------- The result ---------- */
 
 .summary {
   border-top: 4px solid var(--gold);
+}
+
+/* So the bottom bar's jump doesn't hide the heading */
+#result {
+  scroll-margin-top: 16px;
 }
 
 .total {
@@ -511,12 +581,6 @@ h1 {
 
 .breakdown li:last-child {
   border-bottom: none;
-}
-
-.breakdown small {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--muted);
 }
 
 .breakdown strong {
@@ -576,62 +640,15 @@ h1 {
   margin-top: 4px;
 }
 
-/* ---------- Household total (dark card) ---------- */
+/* ---------- Buttons under the result ---------- */
 
-.household {
-  margin-top: 32px;
-  scroll-margin-top: 16px;
-  color: white;
-  border: none;
-  background-color: var(--green-dark);
-  background-image: var(--pattern);
-  background-size: 80px 80px;
-}
-
-.household .group-label {
-  color: var(--gold-light);
-}
-
-.household .total {
-  color: var(--gold);
-}
-
-.household .hint,
-.household .breakdown small {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.household .breakdown,
-.household .breakdown li {
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
-.link-button {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  padding: 0;
-}
-
-.link-button:hover {
-  color: var(--gold);
-}
-
-/* ---------- Download button ---------- */
-
-.download {
+.actions {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin: 8px 0 24px;
-}
-
-.download .hint {
-  margin-top: 0;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
 }
 
 .button-primary {
@@ -648,6 +665,21 @@ h1 {
 
 .button-primary:hover {
   background: #d8b35c;
+}
+
+.button-secondary {
+  font: inherit;
+  font-weight: 600;
+  color: var(--green);
+  background: white;
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  padding: 12px 22px;
+  cursor: pointer;
+}
+
+.button-secondary:hover {
+  background: var(--green-light);
 }
 
 /* ---------- Total bar at the bottom of the screen ---------- */
@@ -778,130 +810,21 @@ h1 {
   margin-top: 6px;
 }
 
-/* ---------- Today's prices (in the green band) ---------- */
+/* ---------- Give your zakat (charity link) ---------- */
 
-.price-strip {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 24px;
-  margin-top: 24px;
-  padding: 12px 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.95rem;
+.donate {
+  border-left: 4px solid var(--green);
 }
 
-.price-strip strong {
-  color: var(--gold);
-  font-weight: 600;
+.donate h2 {
+  margin-bottom: 4px;
 }
 
-.price-time {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.price-strip.failed {
-  display: block;
-  background: rgba(163, 59, 47, 0.3);
-}
-
-.price-inputs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 10px;
-}
-
-.price-inputs label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.85rem;
-}
-
-.price-inputs input {
-  font: inherit;
-  color: var(--text);
-  width: 170px;
-  padding: 8px 10px;
-  border: none;
-  border-radius: 10px;
-}
-
-/* ---------- Name box ---------- */
-
-.name-field input {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.field input.invalid {
-  outline: 2px solid var(--red);
-  border-color: transparent;
-}
-
-.name-warning {
-  flex-basis: 100%;
-  margin: 0;
-}
-
-/* The "+ Add person" tab sits on the green band, so give it a background */
-.tab.add {
-  background: white;
-}
-
-/* ---------- Groups inside a section (e.g. Bank loans) ---------- */
-
-.row-group {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #fcfaf6;
-  padding: 12px;
-  margin-bottom: 10px;
-}
-
-.row-group-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.row-group-title {
-  flex: 1;
-  font-weight: 600;
-}
-
-.row-group-total {
-  font-weight: 600;
-  color: var(--red);
-}
-
-/* Each bank sits indented under its group */
-.sub-row {
-  padding-left: 14px;
-  border-left: 2px solid var(--gold-light);
-}
-
-.add-sub {
-  margin-left: 16px;
-}
-
-/* Gold and Silver: a fixed name instead of a text box */
-.row-fixed-label {
-  flex: 2;
-  align-self: center;
-  font-weight: 600;
-  padding: 10px 2px;
-}
-
-/* So the bottom bar's jump doesn't hide the heading */
-#result {
-  scroll-margin-top: 16px;
+/* The link is styled like the gold buttons */
+.donate-button {
+  display: inline-block;
+  margin-top: 16px;
+  text-decoration: none;
 }
 
 /* ---------- Phones ---------- */
@@ -928,15 +851,23 @@ h1 {
     font-size: 2.3rem;
   }
 
+  /* 16px stops iPhones zooming in when you tap a box */
+  .field input,
+  .field select,
+  .row input {
+    font-size: 16px;
+  }
+
   /* Keep each row on ONE line: name, amount, ✕ */
   .row {
     flex-wrap: nowrap;
     gap: 6px;
   }
 
-  .row-label,
-  .row-fixed-label {
-    flex: 1.4 1 0;
+  /* Name box gets twice the room of the amount box */
+    .row-label,
+  .row-grams {
+    flex: 2 1 0;
     min-width: 0;
   }
 
@@ -949,21 +880,21 @@ h1 {
     padding: 10px 8px;
   }
 
-  /* No pencil icon on phones, to save room */
+  /* Smaller text in the name boxes, and no pencil, so long names fit */
   .row input.row-label {
+    font-size: 13px;
     background-image: none;
     padding-right: 8px;
+  }
+
+    .row-money {
+    font-size: 14px;
+    padding: 10px 8px;
   }
 
   .remove {
     flex-shrink: 0;
     padding: 6px 10px;
-  }
-
-  .row-worth {
-    flex-shrink: 0;
-    min-width: 0;
-    font-size: 0.8rem;
   }
 
   .rate-tag {
@@ -982,41 +913,6 @@ h1 {
 
   .add-sub {
     margin-left: 8px;
-  }
-
-  /* Hide the up/down arrows in number boxes */
-  .row input[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-  }
-
-  .row input[type="number"]::-webkit-inner-spin-button,
-  .row input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  /* 16px stops iPhones zooming in when you tap a box */
-  .field input,
-  .field select,
-  .row input {
-    font-size: 16px;
-  }
-
-
-/* Name boxes: smaller text and more room, so long names fit */
-  .row-label,
-  .row-fixed-label {
-    flex: 2 1 0;
-  }
-
-  .row-value {
-    flex: 1 1 0;
-  }
-
-  .row input.row-label,
-  .row-fixed-label {
-    font-size: 13px;
   }
 }
 
@@ -1085,17 +981,6 @@ h1 {
     color: var(--green);
   }
 
-  .report-person + .report-person {
-    break-before: page; /* each person on a new page */
-  }
-
-  .report h2 {
-    font-size: 15pt;
-    border-bottom: 2px solid var(--gold);
-    padding-bottom: 4px;
-    margin-bottom: 8px;
-  }
-
   .report table {
     width: 100%;
     border-collapse: collapse;
@@ -1137,57 +1022,4 @@ h1 {
     font-size: 9pt;
     color: #777;
   }
-}
-/* ---------- Buttons under a person's result ---------- */
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-}
-
-.button-secondary {
-  font: inherit;
-  font-weight: 600;
-  color: var(--green);
-  background: white;
-  border: 1px solid var(--green);
-  border-radius: 999px;
-  padding: 12px 22px;
-  cursor: pointer;
-}
-
-.button-secondary:hover {
-  background: var(--green-light);
-}
-
-/* The small "PDF" button next to each name in the household card */
-.row-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.small-button {
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--gold-light);
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 999px;
-  padding: 3px 12px;
-  cursor: pointer;
-}
-
-.small-button:hover {
-  color: var(--gold);
-  border-color: var(--gold);
-}
-
-.household .actions {
-  border-color: rgba(255, 255, 255, 0.15);
 }

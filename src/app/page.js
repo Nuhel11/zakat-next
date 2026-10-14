@@ -7,6 +7,7 @@ import PriceStrip from "./PriceStrip";
 import Summary from "./Summary";
 import Report from "./Report";
 import { NISAB_GRAMS, formatMoney } from "./money";
+import DonateCard from "./DonateCard";
 
 const CURRENCY = "£";
 const NISAB_BASIS = "gold"; // change to "silver" to use the silver nisab
@@ -41,8 +42,7 @@ function emptyPerson() {
 export default function Home() {
   const [person, setPerson] = useState(emptyPerson);
   const [formNumber, setFormNumber] = useState(1); // goes up for each new person
-  const [downloaded, setDownloaded] = useState(false); // has this person's PDF been made?
-  const [nameError, setNameError] = useState(false);
+  const [downloaded, setDownloaded] = useState(false); // has this PDF been made?
   const [prices, setPrices] = useState({
     gold: 0,
     silver: 0,
@@ -82,23 +82,11 @@ export default function Home() {
     setDownloaded(false); // something changed since the last PDF
   }
 
-  // Makes sure a name has been entered. If not, takes them to the name box.
-  function hasName() {
-    if (person.name.trim()) return true;
-
-    setNameError(true);
-    const box = document.getElementById("person-name");
-    box.scrollIntoView({ behavior: "smooth", block: "center" });
-    box.focus({ preventScroll: true });
-    return false;
-  }
-
   function downloadPdf() {
-    if (!hasName()) return;
-
-    // The PDF file name comes from the page title
+    // The PDF file name comes from the page title. The name is added only if one was typed.
+    const year = new Date().getFullYear();
     const oldTitle = document.title;
-    document.title = "Zakat " + new Date().getFullYear() + " - " + person.name.trim();
+    document.title = name ? "Zakat " + year + " - " + name : "Zakat " + year;
     window.addEventListener("afterprint", () => { document.title = oldTitle; }, { once: true });
 
     window.print();
@@ -107,13 +95,13 @@ export default function Home() {
 
   // "Start the next person": clear the form for the next family member
   function startNext() {
-    const hasName = person.name.trim() !== "";
+    const hasFigures = name !== "" || result.assets > 0 || result.debts > 0;
     if (
-      hasName &&
+      hasFigures &&
       !downloaded &&
       !window.confirm(
-        "You haven't downloaded " + person.name.trim() + "'s PDF yet. " +
-        "Start a new form anyway? Their figures will be cleared."
+        (name ? "You haven't downloaded " + name + "'s PDF yet. " : "You haven't downloaded the PDF yet. ") +
+        "Start a new form anyway? These figures will be cleared."
       )
     ) {
       return;
@@ -122,7 +110,6 @@ export default function Home() {
     setPerson(emptyPerson());
     setFormNumber(formNumber + 1); // also closes the sections back to how they started
     setDownloaded(false);
-    setNameError(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -134,9 +121,8 @@ export default function Home() {
     return section.metal ? prices[section.metal] : 1;
   }
 
-  const displayName = person.name.trim() || "this person";
+  const name = person.name.trim(); // "" if no name was typed
   const result = calculateZakat(person.rows, prices, nisab, person.fullYear);
-  const showNameError = nameError && !person.name.trim();
 
   return (
     <main className="container">
@@ -144,8 +130,8 @@ export default function Home() {
         <p className="eyebrow">ZAKAT · 2.5% OF WEALTH HELD FOR A YEAR</p>
         <h1>Zakat Calculator</h1>
         <p className="intro">
-          Enter your full name and what you own. Download your PDF, then start the
-          next person.
+          Enter what you own and what you owe to see your zakat. Download your PDF, then
+          start the next person, for example your wife or mother.
         </p>
         <PriceStrip
           prices={prices}
@@ -157,23 +143,14 @@ export default function Home() {
 
       <section className="card person-head">
         <label className="field name-field">
-          <span>Full name</span>
+          <span>Full name (optional)</span>
           <input
             id="person-name"
             placeholder="Enter your full name"
-            className={showNameError ? "invalid" : ""}
             value={person.name}
-            onChange={(e) => {
-              updatePerson({ name: e.target.value });
-              setNameError(false);
-            }}
+            onChange={(e) => updatePerson({ name: e.target.value })}
           />
         </label>
-        {showNameError && (
-          <p className="warning name-warning">
-            Please enter a full name before downloading the PDF.
-          </p>
-        )}
       </section>
 
       {SECTIONS.map((section) => (
@@ -190,8 +167,8 @@ export default function Home() {
       ))}
 
       <Summary
-        title={"Zakat due for " + displayName}
-        name={displayName}
+        title={name ? "Zakat due for " + name : "Zakat due"}
+        name={name}
         result={result}
         nisab={nisab}
         currency={CURRENCY}
@@ -200,11 +177,12 @@ export default function Home() {
         onDownload={downloadPdf}
         onAddNext={startNext}
       />
+      <DonateCard amount={result.total} currency={CURRENCY} />
 
       {/* Always visible at the bottom of the screen */}
       <a href="#result" className="total-bar">
         <div className="container total-bar-inner">
-          <span>Zakat due for {displayName}</span>
+          <span>{name ? "Zakat due for " + name : "Zakat due"}</span>
           <strong>{formatMoney(result.total, CURRENCY)}</strong>
         </div>
       </a>
@@ -212,7 +190,7 @@ export default function Home() {
       {/* Only shows when printing / saving as PDF */}
       <Report
         person={person}
-        name={displayName}
+        name={name}
         result={result}
         currency={CURRENCY}
         nisabBasis={NISAB_BASIS}

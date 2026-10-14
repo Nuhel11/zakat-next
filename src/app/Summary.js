@@ -56,7 +56,7 @@ export default function Summary({
 
       <div className="actions">
         <button type="button" className="button-primary" onClick={onDownload}>
-          Download {name}'s PDF
+                    {name ? "Download " + name + "'s PDF" : "Download PDF"}
         </button>
         <button type="button" className="button-secondary" onClick={onAddNext}>
           Start the next person

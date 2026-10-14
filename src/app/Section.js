@@ -122,103 +122,121 @@ export default function Section({ section, rows, onChange, price, currency }) {
             </p>
           )}
 
-          {rows.map((row) =>
-            row.group ? (
-              // ---------- A group, e.g. Bank loans with a list of banks ----------
-              <div className="row-group" key={row.id}>
-                <div className="row-group-head">
-                  <span className="row-group-title">{row.label}</span>
-                  <span className="row-group-total">{formatMoney(rowAmount(row), currency)}</span>
-                  <button
-                    type="button"
-                    className="remove"
-                    aria-label={"Remove " + row.label}
-                    onClick={() => removeRow(row.id)}
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {row.items.map((item) => (
-                  <div className="row sub-row" key={item.id}>
-                    <input
-                      className="row-label"
-                      placeholder={row.itemPlaceholder || "Name"}
-                      aria-label="Name"
-                      value={item.label}
-                      autoFocus={item.isNew}
-                      onChange={(e) => updateItem(row.id, item.id, "label", e.target.value)}
-                    />
-                    <input
-                      className="row-value"
-                      type="number"
-                      min="0"
-                      step="any"
-                      placeholder="Amount"
-                      aria-label="Amount"
-                      value={item.value}
-                      onChange={(e) => updateItem(row.id, item.id, "value", e.target.value)}
-                    />
+          {rows.map((row) => {
+            // ---------- A group, e.g. Bank loans with a list of banks ----------
+            if (row.group) {
+              return (
+                <div className="row-group" key={row.id}>
+                  <div className="row-group-head">
+                    <span className="row-group-title">{row.label}</span>
+                    <span className="row-group-total">{formatMoney(rowAmount(row), currency)}</span>
                     <button
                       type="button"
                       className="remove"
-                      aria-label="Remove"
-                      onClick={() => removeItem(row.id, item.id)}
+                      aria-label={"Remove " + row.label}
+                      onClick={() => removeRow(row.id)}
                     >
                       ✕
                     </button>
                   </div>
-                ))}
 
-                <button type="button" className="add-row add-sub" onClick={() => addItem(row.id)}>
-                  + {row.addItemLabel || "Add"}
-                </button>
-              </div>
-            ) : (
-              // ---------- A normal row ----------
-              <div className={row.minus ? "row minus" : "row"} key={row.id}>
-                {section.fixed ? (
-                  // Gold and silver: a fixed name that can't be changed
-                  <span className="row-fixed-label">{row.label}</span>
-                ) : (
+                  {row.items.map((item) => (
+                    <div className="row sub-row" key={item.id}>
+                      <input
+                        className="row-label"
+                        placeholder={row.itemPlaceholder || "Name"}
+                        aria-label="Name"
+                        value={item.label}
+                        autoFocus={item.isNew}
+                        onChange={(e) => updateItem(row.id, item.id, "label", e.target.value)}
+                      />
+                      <input
+                        className="row-value"
+                        type="number"
+                        min="0"
+                        step="any"
+                        inputMode="decimal"
+                        placeholder="Amount"
+                        aria-label="Amount"
+                        value={item.value}
+                        onChange={(e) => updateItem(row.id, item.id, "value", e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="remove"
+                        aria-label="Remove"
+                        onClick={() => removeItem(row.id, item.id)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+
+                  <button type="button" className="add-row add-sub" onClick={() => addItem(row.id)}>
+                    + {row.addItemLabel || "Add"}
+                  </button>
+                </div>
+              );
+            }
+
+            // ---------- Gold and Silver: grams on the left, money on the right ----------
+            if (section.fixed) {
+              return (
+                <div className="row" key={row.id}>
                   <input
-                    className="row-label"
-                    placeholder={section.rowPlaceholder || "Name this row"}
-                    aria-label="Name"
-                    value={row.label}
-                    autoFocus={row.isNew}
-                    onChange={(e) => updateRow(row.id, "label", e.target.value)}
+                    className="row-grams"
+                    type="number"
+                    min="0"
+                    step="any"
+                    inputMode="decimal"
+                    placeholder={row.label + " in grams"}
+                    aria-label={row.label + " in grams"}
+                    value={row.value}
+                    onChange={(e) => updateRow(row.id, "value", e.target.value)}
                   />
-                )}
+                  <span className="row-money" aria-label={row.label + " value"}>
+                    {formatMoney((Number(row.value) || 0) * price, currency)}
+                  </span>
+                  {/* An invisible ✕, so the boxes line up with every other section */}
+                  <span className="remove remove-spacer" aria-hidden="true">✕</span>
+                </div>
+              );
+            }
+
+            // ---------- A normal row: name on the left, amount on the right ----------
+            return (
+              <div className={row.minus ? "row minus" : "row"} key={row.id}>
+                <input
+                  className="row-label"
+                  placeholder={section.rowPlaceholder || "Name this row"}
+                  aria-label="Name"
+                  value={row.label}
+                  autoFocus={row.isNew}
+                  onChange={(e) => updateRow(row.id, "label", e.target.value)}
+                />
                 <input
                   className="row-value"
                   type="number"
                   min="0"
                   step="any"
-                  placeholder={section.metal ? "grams" : "Amount"}
-                  aria-label={section.metal ? row.label + " in grams" : "Amount"}
+                  inputMode="decimal"
+                  placeholder="Amount"
+                  aria-label="Amount"
                   value={row.value}
                   onChange={(e) => updateRow(row.id, "value", e.target.value)}
                 />
-                {section.metal && (
-                  <span className="row-worth">
-                    {formatMoney((Number(row.value) || 0) * price, currency)}
-                  </span>
-                )}
                 {row.rate !== 2.5 && <span className="rate-tag">{row.rate}%</span>}
-                {!section.fixed && (
-                  <button
-                    type="button"
-                    className="remove"
-                    aria-label="Remove row"
-                    onClick={() => removeRow(row.id)}
-                  >
-                    ✕
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="remove"
+                  aria-label="Remove row"
+                  onClick={() => removeRow(row.id)}
+                >
+                  ✕
+                </button>
               </div>
-            )
-          )}
+            );
+          })}
 
           {/* Gold and silver have no "Add row" button */}
           {!section.fixed && (
