@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatMoney } from "./money";
 import { CHARITY } from "./charity";
 
@@ -12,11 +12,17 @@ function defaultMessage() {
   );
 }
 
+// True on phones and tablets (touch screens)
+function isTouchDevice() {
+  return window.matchMedia("(pointer: coarse)").matches;
+}
+
 export default function DonateCard({ amount, currency, name }) {
   const [sharing, setSharing] = useState(false);       // is the share panel open?
   const [message, setMessage] = useState(defaultMessage);
   const [showName, setShowName] = useState(true);      // put their name on the card?
   const [copied, setCopied] = useState(false);
+  const [cardFile, setCardFile] = useState(null);      // the card picture, ready to share
 
   const heading = amount > 0
     ? "Give your " + formatMoney(amount, currency) + " to " + CHARITY.name
@@ -25,8 +31,27 @@ export default function DonateCard({ amount, currency, name }) {
   // The name on the card (only if they typed one and want it shown)
   const nameOnCard = showName && name ? name : "";
   const nameQuery = nameOnCard ? "?name=" + encodeURIComponent(nameOnCard) : "";
+  const imageAddress = "/api/share-image" + nameQuery;
 
-  // Facebook can't let a website type the post for them, so we copy the message to paste
+  // While the panel is open, get the card picture ready, so phones can attach it to the post.
+  // (It has to be ready before the button is pressed, or phones block the share.)
+  useEffect(() => {
+    if (!sharing) return;
+    let cancelled = false;
+
+    fetch(imageAddress)
+      .then((response) => response.blob())
+      .then((blob) => {
+        if (!cancelled) {
+          setCardFile(new File([blob], "zakat-given.png", { type: "image/png" }));
+        }
+      })
+      .catch(() => {});
+
+    return () => { cancelled = true; };
+  }, [sharing, imageAddress]);
+
+  // Facebook doesn't allow websites to type the post for people, so we copy it for them
   function copyMessage() {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(message).catch(() => {});
@@ -34,10 +59,20 @@ export default function DonateCard({ amount, currency, name }) {
     setCopied(true);
   }
 
-  // Copy the message, then open Facebook's share window with our "zakat given" page.
-  // Facebook reads that page and shows its card (picture, title, text) in the post.
   function shareOnFacebook() {
     copyMessage();
+
+    // Phones: open the phone's share menu with the card picture attached.
+    // They pick Facebook, and its "Create post" screen opens with the picture in it.
+    const canShareFile =
+      cardFile && navigator.canShare && navigator.canShare({ files: [cardFile] });
+
+    if (isTouchDevice() && canShareFile) {
+      navigator.share({ files: [cardFile], text: message }).catch(() => {});
+      return;
+    }
+
+    // Computers: Facebook's own "Create post" window, with the card attached as a link preview
     const pageAddress = window.location.origin + "/gave" + nameQuery;
     window.open(
       "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(pageAddress),
@@ -89,10 +124,10 @@ export default function DonateCard({ amount, currency, name }) {
           <div className="share-panel">
             <p className="group-label">Your Facebook post</p>
 
-            {/* The card exactly as Facebook will show it */}
+            {/* The card as it will appear in the post */}
             <img
               className="share-preview"
-              src={"/api/share-image" + nameQuery}
+              src={imageAddress}
               alt="The card that will appear in your Facebook post"
               width={1200}
               height={630}
@@ -121,19 +156,31 @@ export default function DonateCard({ amount, currency, name }) {
               />
             </label>
 
+            <ol className="share-steps">
+              <li>Press <strong>Share on Facebook</strong>. Your message is copied for you.</li>
+              <li>Facebook opens its <strong>Create post</strong> screen with the card already in it (on a phone, choose <strong>Facebook</strong> from the list).</li>
+              <li>Tap the text box, <strong>paste</strong> your message (Ctrl + V, or press and hold → Paste), then press <strong>Post</strong>.</li>
+            </ol>
+
             <div className="share-actions">
               <button type="button" className="fb-share" onClick={shareOnFacebook}>
-                Copy message and open Facebook
+                Share on Facebook
               </button>
               <button type="button" className="button-secondary" onClick={copyMessage}>
                 Copy message only
               </button>
+              <a
+                className="button-secondary link-as-button"
+                href={imageAddress}
+                download="zakat-given.png"
+              >
+                Save the card picture
+              </a>
             </div>
 
             {copied && (
-              <p className="hint">
-                Message copied. In Facebook, click in the post box and paste it
-                (Ctrl + V, or press and hold on a phone), then press Post.
+              <p className="hint copied-note">
+                ✓ Message copied – paste it into your Facebook post.
               </p>
             )}
           </div>

@@ -1280,3 +1280,29 @@ h1 {
 .share-actions .button-secondary {
   margin-top: 10px;
 }
+
+/* The three steps above the share buttons */
+.share-steps {
+  margin: 14px 0 4px;
+  padding-left: 22px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.share-steps li + li {
+  margin-top: 4px;
+}
+
+.share-steps li::marker {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.share-actions .link-as-button {
+  margin-top: 10px;
+}
+
+.copied-note {
+  color: var(--green);
+  font-weight: 600;
+}
