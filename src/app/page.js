@@ -162,7 +162,7 @@ export default function Home() {
         onAddNext={startNext}
       />
 
-            <DonateCard amount={result.total} currency={CURRENCY} name={name} />
+           <DonateCard amount={result.total} currency={CURRENCY} /> 
 
       {/* Always visible at the bottom of the screen */}
       <a href="#result" className="total-bar">
