@@ -1231,3 +1231,52 @@ h1 {
 .fb-share:hover {
   background: #0f63d6;
 }
+
+/* ---------- Share on Facebook panel ---------- */
+
+.share-panel {
+  margin-top: 4px;
+}
+
+/* The card as Facebook will show it */
+.share-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 8px 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.share-message {
+  margin-top: 14px;
+}
+
+.share-message textarea {
+  font: inherit;
+  color: var(--text);
+  background: #fdfcf9;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  resize: vertical;
+}
+
+.share-message textarea:focus {
+  outline: 2px solid var(--green);
+  border-color: transparent;
+  background: white;
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.share-actions .button-secondary {
+  margin-top: 10px;
+}
