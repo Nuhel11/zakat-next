@@ -1,5 +1,15 @@
-import { SECTIONS, rowAmount } from "./sections";
+import { ASSET_TYPES, LIABILITY_TYPES, findType, entryValue } from "./entries";
 import { formatMoney } from "./money";
+
+// Only rows with a type chosen and something entered
+function filledRows(entries, types) {
+  return entries.filter((entry) => {
+    const type = findType(types, entry.type);
+    if (!type) return false;
+    if (type.named) return entry.items.some((item) => Number(item.value) > 0);
+    return Number(entry.value) > 0;
+  });
+}
 
 export default function Report({ person, name, result, currency, nisabBasis, prices, nisab }) {
   const money = (amount) => formatMoney(amount, currency);
@@ -7,17 +17,41 @@ export default function Report({ person, name, result, currency, nisabBasis, pri
     day: "numeric", month: "long", year: "numeric",
   });
 
-  // Only the sections where something was filled in
-  const filledSections = SECTIONS
-    .map((section) => ({
-      section: section,
-      rows: person.rows[section.id].filter((row) => rowAmount(row) > 0),
-    }))
-    .filter((item) => item.rows.length > 0);
+  const assets = filledRows(person.assets, ASSET_TYPES);
+  const liabilities = filledRows(person.liabilities, LIABILITY_TYPES);
+
+  // One table line per row, e.g. "Cash in hand     £7,000.00".
+  // Banks, cards and loans get one line per bank, e.g. "Bank account – HSBC     £20,000.00".
+  function tableRows(entries, types, sign) {
+    return entries.flatMap((entry) => {
+      const type = findType(types, entry.type);
+
+      if (type.named) {
+        return entry.items
+          .filter((item) => Number(item.value) > 0)
+          .map((item) => (
+            <tr key={item.id}>
+              <td>{type.label}{item.name ? " – " + item.name : ""}</td>
+              <td className="num">{sign}{money(Number(item.value))}</td>
+            </tr>
+          ));
+      }
+
+      return [
+        <tr key={entry.id}>
+          <td>
+            {type.label}
+            {type.metal ? " (" + entry.value + " g)" : ""}
+          </td>
+          <td className="num">{sign}{money(entryValue(entry, types, prices))}</td>
+        </tr>,
+      ];
+    });
+  }
 
   return (
     <div className="report">
-            <h1>{name ? "Zakat calculation for " + name : "Zakat calculation"}</h1>
+      <h1>{name ? "Zakat calculation for " + name : "Zakat calculation"}</h1>
       <p className="report-meta">
         Worked out on {today} · Gold {money(prices.gold)}/g · Silver {money(prices.silver)}/g ·
         Nisab {money(nisab)} (based on {nisabBasis})
@@ -28,48 +62,20 @@ export default function Report({ person, name, result, currency, nisabBasis, pri
         <strong>{money(result.total)}</strong>
       </div>
 
-      {filledSections.length === 0 ? (
+      {assets.length === 0 && liabilities.length === 0 ? (
         <p>Nothing entered.</p>
       ) : (
         <table>
           <tbody>
-            {filledSections.map(({ section, rows }) => {
-              const price = section.metal ? prices[section.metal] : 1;
-              const sign = section.liability ? "− " : "";
+            {assets.length > 0 && (
+              <tr className="report-section"><th colSpan={2}>Assets</th></tr>
+            )}
+            {tableRows(assets, ASSET_TYPES, "")}
 
-              return [
-                <tr className="report-section" key={section.id}>
-                  <th colSpan={2}>{section.title}</th>
-                </tr>,
-
-                ...rows.flatMap((row) =>
-                  row.group
-                    ? // A group: one line per bank, e.g. "Bank loans: HSBC"
-                      row.items
-                        .filter((item) => Number(item.value) > 0)
-                        .map((item) => (
-                          <tr key={item.id}>
-                            <td>{row.label}: {item.label || "Unnamed"}</td>
-                            <td className="num">{sign}{money(Number(item.value))}</td>
-                          </tr>
-                        ))
-                    : // A normal row
-                      [
-                        <tr key={row.id}>
-                          <td>
-                            {row.label || "Unnamed"}
-                            {section.metal ? ` (${row.value} g)` : ""}
-                            {row.rate !== 2.5 ? ` at ${row.rate}%` : ""}
-                          </td>
-                          <td className="num">
-                            {row.minus ? "− " : sign}
-                            {money(Number(row.value) * price)}
-                          </td>
-                        </tr>,
-                      ]
-                ),
-              ];
-            })}
+            {liabilities.length > 0 && (
+              <tr className="report-section"><th colSpan={2}>Liabilities</th></tr>
+            )}
+            {tableRows(liabilities, LIABILITY_TYPES, "− ")}
           </tbody>
         </table>
       )}
@@ -77,7 +83,7 @@ export default function Report({ person, name, result, currency, nisabBasis, pri
       <table className="report-summary">
         <tbody>
           <tr><td>Total wealth</td><td className="num">{money(result.assets)}</td></tr>
-          <tr><td>Less debts</td><td className="num">− {money(result.debts)}</td></tr>
+          <tr><td>Less liabilities</td><td className="num">− {money(result.debts)}</td></tr>
           <tr><td>Net wealth</td><td className="num">{money(result.net)}</td></tr>
           <tr>
             <td>Nisab check</td>

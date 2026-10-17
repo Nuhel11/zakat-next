@@ -1023,3 +1023,211 @@ h1 {
     color: #777;
   }
 }
+/* ---------- Assets and Liabilities lists ---------- */
+
+/* A coloured line along the top tells the two cards apart */
+.entry-card.assets {
+  border-top: 4px solid var(--green);
+}
+
+.entry-card.liabilities {
+  border-top: 4px solid var(--red);
+}
+
+/* A row: Type | Amount | ✕ */
+.entry {
+  display: grid;
+  grid-template-columns: 2fr 1fr 46px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.entry select,
+.entry input {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  color: var(--text);
+  background: #fdfcf9;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+/* The dropdown stands out a little */
+.entry select.entry-type {
+  background-color: var(--bg);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.entry select:focus,
+.entry input:focus {
+  outline: 2px solid var(--green);
+  border-color: transparent;
+  background-color: white;
+}
+
+/* The amount box before a type is chosen */
+.entry input:disabled {
+  background: #f1eee7;
+  cursor: not-allowed;
+}
+
+.liabilities .entry-value {
+  color: var(--red);
+}
+
+.entry .remove {
+  width: 46px;
+  padding: 8px 0;
+}
+
+/* No up/down arrows in the amount boxes */
+.entry input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.entry input[type="number"]::-webkit-inner-spin-button,
+.entry input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* The line under a gold, silver or crops row, e.g. "10 g × £101.47 per gram = £1,014.70" */
+.entry-note {
+  grid-column: 1 / -1;
+  margin: -2px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.entry-note.warning {
+  color: var(--red);
+  background: var(--red-light);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+/* ---------- Banks, cards and loans: a box holding one line per bank ---------- */
+
+.entry-group {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #fcfaf6;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.entry-group .entry {
+  margin-bottom: 8px;
+}
+
+/* The group's total, where the amount box would be */
+.entry-group-total {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  padding: 10px 12px;
+  font-weight: 600;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.liabilities .entry-group-total {
+  color: var(--red);
+}
+
+/* Each bank sits indented under the dropdown */
+.sub-entry {
+  padding-left: 14px;
+  border-left: 2px solid var(--gold-light);
+}
+
+.entry-group .add-sub {
+  margin-left: 16px;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+/* ---------- Phones: Assets and Liabilities ---------- */
+
+@media (max-width: 600px) {
+  /* Every line stays on one line: Type (or bank name) | Amount | ✕ */
+  .entry {
+    grid-template-columns: 1.6fr 1fr 40px;
+    gap: 6px;
+  }
+
+  .entry select,
+  .entry input,
+  .entry-group-total {
+    font-size: 14px;
+    padding: 10px 8px;
+  }
+
+  .entry .remove {
+    width: 40px;
+  }
+
+  .entry-group {
+    padding: 8px;
+  }
+
+  .sub-entry {
+    padding-left: 8px;
+  }
+
+  .entry-group .add-sub {
+    margin-left: 8px;
+  }
+}
+
+/* ---------- Give your zakat: Facebook ---------- */
+
+.donate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.donate-actions .donate-button {
+  margin-top: 0;
+  text-decoration: none;
+}
+
+/* Links that look like the outline buttons */
+.link-as-button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.share-box {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Facebook's own blue */
+.fb-share {
+  margin-top: 10px;
+  font: inherit;
+  font-weight: 600;
+  color: white;
+  background: #1877f2;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  cursor: pointer;
+}
+
+.fb-share:hover {
+  background: #0f63d6;
+}

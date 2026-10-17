@@ -1,47 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SECTIONS, calculateZakat } from "./sections";
-import Section from "./Section";
+import { ASSET_TYPES, LIABILITY_TYPES, newEntry, calculateZakat } from "./entries";
+import EntryList from "./EntryList";
 import PriceStrip from "./PriceStrip";
 import Summary from "./Summary";
+import DonateCard from "./DonateCard";
 import Report from "./Report";
 import { NISAB_GRAMS, formatMoney } from "./money";
-import DonateCard from "./DonateCard";
 
 const CURRENCY = "£";
 const NISAB_BASIS = "gold"; // change to "silver" to use the silver nisab
 
-// Builds the starting rows for every section from the list
-function startingRows() {
-  const all = {};
-  SECTIONS.forEach((section) => {
-    all[section.id] = section.rows.map((row, index) => ({
-      id: section.id + "-" + index,
-      label: row.label,
-      value: "",
-      minus: row.minus || false,
-      rate: row.rate ?? section.rate,
-      // Groups (like Bank loans) hold a list of banks, starting with one empty line
-      group: row.group || false,
-      itemPlaceholder: row.itemPlaceholder,
-      addItemLabel: row.addItemLabel,
-      items: row.group
-        ? [{ id: section.id + "-" + index + "-0", label: "", value: "" }]
-        : [],
-    }));
-  });
-  return all;
-}
-
-// A fresh, empty form
+// A fresh, empty form: one empty row in each list
 function emptyPerson() {
-  return { name: "", rows: startingRows(), fullYear: true };
+  return {
+    name: "",
+    assets: [newEntry()],
+    liabilities: [newEntry()],
+    fullYear: true,
+  };
 }
 
 export default function Home() {
   const [person, setPerson] = useState(emptyPerson);
-  const [formNumber, setFormNumber] = useState(1); // goes up for each new person
   const [downloaded, setDownloaded] = useState(false); // has this PDF been made?
   const [prices, setPrices] = useState({
     gold: 0,
@@ -95,7 +77,7 @@ export default function Home() {
 
   // "Start the next person": clear the form for the next family member
   function startNext() {
-    const hasFigures = name !== "" || result.assets > 0 || result.debts > 0;
+    const hasFigures = name !== "" || result.assets > 0 || result.debts > 0 || result.cropZakat > 0;
     if (
       hasFigures &&
       !downloaded &&
@@ -108,7 +90,6 @@ export default function Home() {
     }
 
     setPerson(emptyPerson());
-    setFormNumber(formNumber + 1); // also closes the sections back to how they started
     setDownloaded(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -116,23 +97,13 @@ export default function Home() {
   // ---------- Working things out ----------
 
   const nisab = NISAB_GRAMS[NISAB_BASIS] * prices[NISAB_BASIS];
-
-  function priceFor(section) {
-    return section.metal ? prices[section.metal] : 1;
-  }
-
   const name = person.name.trim(); // "" if no name was typed
-  const result = calculateZakat(person.rows, prices, nisab, person.fullYear);
+  const result = calculateZakat(person, prices, nisab);
 
   return (
     <main className="container">
       <section className="hero">
-        <p className="eyebrow">ZAKAT · 2.5% OF WEALTH HELD FOR A YEAR</p>
         <h1>Zakat Calculator</h1>
-        <p className="intro">
-          Enter what you own and what you owe to see your zakat. Download your PDF, then
-          start the next person, for example your wife or mother.
-        </p>
         <PriceStrip
           prices={prices}
           nisab={nisab}
@@ -153,18 +124,31 @@ export default function Home() {
         </label>
       </section>
 
-      {SECTIONS.map((section) => (
-        <Section
-          key={formNumber + "-" + section.id}
-          section={section}
-          rows={person.rows[section.id]}
-          onChange={(newRows) =>
-            updatePerson({ rows: { ...person.rows, [section.id]: newRows } })
-          }
-          price={priceFor(section)}
-          currency={CURRENCY}
-        />
-      ))}
+      <EntryList
+        kind="assets"
+        title="Assets"
+        help="What you own. Choose each item from the list, then enter the amount. For a bank account, add the bank's name too. Gold and silver are entered in grams."
+        addLabel="Add an asset"
+        totalLabel="Total assets"
+        types={ASSET_TYPES}
+        entries={person.assets}
+        onChange={(assets) => updatePerson({ assets: assets })}
+        prices={prices}
+        currency={CURRENCY}
+      />
+
+      <EntryList
+        kind="liabilities"
+        title="Liabilities"
+        help="What you owe that is due now or within the coming year. Choose each debt from the list, then enter the amount. For cards and loans, add who it's with."
+        addLabel="Add a liability"
+        totalLabel="Total liabilities"
+        types={LIABILITY_TYPES}
+        entries={person.liabilities}
+        onChange={(liabilities) => updatePerson({ liabilities: liabilities })}
+        prices={prices}
+        currency={CURRENCY}
+      />
 
       <Summary
         title={name ? "Zakat due for " + name : "Zakat due"}
@@ -177,6 +161,7 @@ export default function Home() {
         onDownload={downloadPdf}
         onAddNext={startNext}
       />
+
       <DonateCard amount={result.total} currency={CURRENCY} />
 
       {/* Always visible at the bottom of the screen */}
